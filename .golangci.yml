@@ -17,7 +17,7 @@ linters:
     - bodyclose
     - noctx
     - sqlclosecheck
-    - exportloopref
+    - copyloopvar
     - gocritic
     - gosec
     - prealloc
@@ -55,5 +55,10 @@ issues:
     - path: internal/handler/
       linters:
         - noctx
+    # Ignore deprecated Firebase credentials API - required for file-based credentials
+    - path: internal/infrastructure/firebase/client.go
+      linters:
+        - staticcheck
+      text: "SA1019"
   max-issues-per-linter: 50
   max-same-issues: 10

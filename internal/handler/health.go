@@ -85,9 +85,7 @@ func (h *HealthHandler) Live(c *gin.Context) {
 // RegisterRoutes registers health check routes on a Gin router group.
 func (h *HealthHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	health := rg.Group("/health")
-	{
-		health.GET("", h.Health)
-		health.GET("/ready", h.Ready)
-		health.GET("/live", h.Live)
-	}
+	health.GET("", h.Health)
+	health.GET("/ready", h.Ready)
+	health.GET("/live", h.Live)
 }

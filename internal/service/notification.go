@@ -173,11 +173,11 @@ func (s *NotificationService) sendEmail(ctx context.Context, req SendRequest) er
 
 	// Update status
 	if err != nil {
-		s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
+		_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
 		return fmt.Errorf("failed to send email: %w", err)
 	}
 
-	s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
 	return nil
 }
 
@@ -205,11 +205,11 @@ func (s *NotificationService) sendPush(ctx context.Context, req SendRequest) err
 	err := s.pushSender.SendToUser(ctx, req.UserID, req.Title, req.Body, req.Data)
 
 	if err != nil {
-		s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
+		_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
 		return fmt.Errorf("failed to send push: %w", err)
 	}
 
-	s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
 	return nil
 }
 
@@ -231,7 +231,7 @@ func (s *NotificationService) sendInApp(ctx context.Context, req SendRequest) er
 
 	// Mark as sent (in-app notifications are "sent" when stored)
 	notification.MarkAsSent()
-	s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
 
 	// Broadcast via WebSocket if available
 	if s.inAppNotifier != nil {

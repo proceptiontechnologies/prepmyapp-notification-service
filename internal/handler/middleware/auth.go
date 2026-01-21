@@ -39,7 +39,7 @@ func JWTAuth(secret string) gin.HandlerFunc {
 
 		// Check for Bearer prefix
 		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "bearer") {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "invalid authorization header format",
 			})
@@ -132,7 +132,7 @@ func OptionalJWTAuth(secret string) gin.HandlerFunc {
 		}
 
 		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+		if len(parts) != 2 || !strings.EqualFold(parts[0], "bearer") {
 			c.Next()
 			return
 		}
@@ -178,7 +178,11 @@ func GetUserID(c *gin.Context) uuid.UUID {
 	if !exists {
 		return uuid.Nil
 	}
-	return userID.(uuid.UUID)
+	id, ok := userID.(uuid.UUID)
+	if !ok {
+		return uuid.Nil
+	}
+	return id
 }
 
 // GetEmail extracts the email from the context.
@@ -187,5 +191,9 @@ func GetEmail(c *gin.Context) string {
 	if !exists {
 		return ""
 	}
-	return email.(string)
+	e, ok := email.(string)
+	if !ok {
+		return ""
+	}
+	return e
 }

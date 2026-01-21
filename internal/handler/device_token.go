@@ -132,9 +132,7 @@ func (h *DeviceTokenHandler) Unregister(c *gin.Context) {
 // RegisterRoutes registers device token routes on a router group.
 func (h *DeviceTokenHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	devices := rg.Group("/device-tokens")
-	{
-		devices.POST("", h.Register)
-		devices.GET("", h.List)
-		devices.DELETE("/:token", h.Unregister)
-	}
+	devices.POST("", h.Register)
+	devices.GET("", h.List)
+	devices.DELETE("/:token", h.Unregister)
 }

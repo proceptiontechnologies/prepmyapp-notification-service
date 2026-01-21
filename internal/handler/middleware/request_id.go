@@ -36,5 +36,9 @@ func GetRequestID(c *gin.Context) string {
 	if !exists {
 		return ""
 	}
-	return requestID.(string)
+	id, ok := requestID.(string)
+	if !ok {
+		return ""
+	}
+	return id
 }

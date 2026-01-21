@@ -158,9 +158,7 @@ func (h *PreferencesHandler) Update(c *gin.Context) {
 // RegisterRoutes registers preferences routes on a router group.
 func (h *PreferencesHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	prefs := rg.Group("/preferences")
-	{
-		prefs.GET("", h.Get)
-		prefs.PUT("", h.Update)
-		prefs.PATCH("", h.Update)
-	}
+	prefs.GET("", h.Get)
+	prefs.PUT("", h.Update)
+	prefs.PATCH("", h.Update)
 }

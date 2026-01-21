@@ -22,12 +22,12 @@ func NewInternalHandler(svc *service.NotificationService) *InternalHandler {
 
 // NotifyRequest represents a request to send a notification.
 type NotifyRequest struct {
-	UserID   string   `json:"user_id" binding:"required"`
-	Email    string   `json:"email"`
-	Channels []string `json:"channels" binding:"required"` // ["email", "push", "in_app"] or ["all"]
-	Template string   `json:"template"`
-	Title    string   `json:"title" binding:"required"`
-	Body     string   `json:"body" binding:"required"`
+	UserID   string                 `json:"user_id" binding:"required"`
+	Email    string                 `json:"email"`
+	Channels []string               `json:"channels" binding:"required"` // ["email", "push", "in_app"] or ["all"]
+	Template string                 `json:"template"`
+	Title    string                 `json:"title" binding:"required"`
+	Body     string                 `json:"body" binding:"required"`
 	Data     map[string]interface{} `json:"data"`
 }
 
@@ -96,12 +96,12 @@ func (h *InternalHandler) Notify(c *gin.Context) {
 
 // BulkNotifyRequest represents a request to send notifications to multiple users.
 type BulkNotifyRequest struct {
-	UserIDs  []string `json:"user_ids" binding:"required"`
-	Emails   map[string]string `json:"emails"` // userID -> email mapping
-	Channels []string `json:"channels" binding:"required"`
-	Template string   `json:"template"`
-	Title    string   `json:"title" binding:"required"`
-	Body     string   `json:"body" binding:"required"`
+	UserIDs  []string               `json:"user_ids" binding:"required"`
+	Emails   map[string]string      `json:"emails"` // userID -> email mapping
+	Channels []string               `json:"channels" binding:"required"`
+	Template string                 `json:"template"`
+	Title    string                 `json:"title" binding:"required"`
+	Body     string                 `json:"body" binding:"required"`
 	Data     map[string]interface{} `json:"data"`
 }
 

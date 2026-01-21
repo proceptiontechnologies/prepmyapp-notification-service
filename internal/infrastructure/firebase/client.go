@@ -97,7 +97,7 @@ func (c *Client) Send(ctx context.Context, token, title, body string, data map[s
 	if err != nil {
 		// Check if token is invalid and deactivate it
 		if messaging.IsUnregistered(err) || messaging.IsInvalidArgument(err) {
-			c.deviceTokenRepo.Deactivate(ctx, token)
+			_ = c.deviceTokenRepo.Deactivate(ctx, token)
 		}
 		return fmt.Errorf("failed to send push notification: %w", err)
 	}
@@ -163,7 +163,7 @@ func (c *Client) SendToUser(ctx context.Context, userID uuid.UUID, title, body s
 			if !resp.Success {
 				// Deactivate invalid tokens
 				if messaging.IsUnregistered(resp.Error) || messaging.IsInvalidArgument(resp.Error) {
-					c.deviceTokenRepo.Deactivate(ctx, tokenStrings[i])
+					_ = c.deviceTokenRepo.Deactivate(ctx, tokenStrings[i])
 				}
 			}
 		}

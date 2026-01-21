@@ -198,11 +198,9 @@ func (h *NotificationHandler) UnreadCount(c *gin.Context) {
 // RegisterRoutes registers notification routes on a router group.
 func (h *NotificationHandler) RegisterRoutes(rg *gin.RouterGroup) {
 	notifications := rg.Group("/notifications")
-	{
-		notifications.GET("", h.List)
-		notifications.GET("/:id", h.Get)
-		notifications.POST("/:id/read", h.MarkAsRead)
-		notifications.POST("/read-all", h.MarkAllAsRead)
-		notifications.GET("/unread-count", h.UnreadCount)
-	}
+	notifications.GET("", h.List)
+	notifications.GET("/:id", h.Get)
+	notifications.POST("/:id/read", h.MarkAsRead)
+	notifications.POST("/read-all", h.MarkAllAsRead)
+	notifications.GET("/unread-count", h.UnreadCount)
 }
