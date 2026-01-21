@@ -70,7 +70,11 @@ func Load() (*Config, error) {
 	viper.AddConfigPath("..")
 
 	// Ignore error if .env doesn't exist - we'll use env vars
-	_ = viper.ReadInConfig()
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+			return nil, fmt.Errorf("failed to read config file: %w", err)
+		}
+	}
 
 	// Enable reading from environment variables
 	viper.AutomaticEnv()

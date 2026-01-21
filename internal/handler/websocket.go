@@ -120,11 +120,15 @@ func (h *WebSocketHandler) validateToken(tokenString string) (uuid.UUID, error) 
 func (h *WebSocketHandler) readPump(client *ws.Client) {
 	defer func() {
 		h.hub.Unregister(client)
-		client.Conn.Close()
+		if err := client.Conn.Close(); err != nil {
+			log.Printf("failed to close websocket connection: %v", err)
+		}
 	}()
 
 	client.Conn.SetReadLimit(maxMessageSize)
-	_ = client.Conn.SetReadDeadline(time.Now().Add(pongWait))
+	if err := client.Conn.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+		log.Printf("failed to set read deadline: %v", err)
+	}
 	client.Conn.SetPongHandler(func(string) error {
 		return client.Conn.SetReadDeadline(time.Now().Add(pongWait))
 	})
@@ -147,16 +151,23 @@ func (h *WebSocketHandler) writePump(client *ws.Client) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
-		client.Conn.Close()
+		if err := client.Conn.Close(); err != nil {
+			log.Printf("failed to close websocket connection: %v", err)
+		}
 	}()
 
 	for {
 		select {
 		case message, ok := <-client.Send:
-			_ = client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := client.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				log.Printf("failed to set write deadline: %v", err)
+				return
+			}
 			if !ok {
 				// Hub closed the channel
-				_ = client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
+				if err := client.Conn.WriteMessage(websocket.CloseMessage, []byte{}); err != nil {
+					log.Printf("failed to write close message: %v", err)
+				}
 				return
 			}
 
@@ -164,13 +175,19 @@ func (h *WebSocketHandler) writePump(client *ws.Client) {
 			if err != nil {
 				return
 			}
-			_, _ = w.Write(message)
+			if _, err := w.Write(message); err != nil {
+				log.Printf("failed to write message: %v", err)
+			}
 
 			// Drain queued messages
 			n := len(client.Send)
 			for i := 0; i < n; i++ {
-				_, _ = w.Write([]byte{'\n'})
-				_, _ = w.Write(<-client.Send)
+				if _, err := w.Write([]byte{'\n'}); err != nil {
+					log.Printf("failed to write newline: %v", err)
+				}
+				if _, err := w.Write(<-client.Send); err != nil {
+					log.Printf("failed to write queued message: %v", err)
+				}
 			}
 
 			if err := w.Close(); err != nil {
@@ -178,7 +195,10 @@ func (h *WebSocketHandler) writePump(client *ws.Client) {
 			}
 
 		case <-ticker.C:
-			_ = client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := client.Conn.SetWriteDeadline(time.Now().Add(writeWait)); err != nil {
+				log.Printf("failed to set write deadline: %v", err)
+				return
+			}
 			if err := client.Conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}

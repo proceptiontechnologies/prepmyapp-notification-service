@@ -173,11 +173,15 @@ func (s *NotificationService) sendEmail(ctx context.Context, req SendRequest) er
 
 	// Update status
 	if err != nil {
-		_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
+		if statusErr := s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed); statusErr != nil {
+			log.Printf("failed to update notification status to failed: %v", statusErr)
+		}
 		return fmt.Errorf("failed to send email: %w", err)
 	}
 
-	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	if err := s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent); err != nil {
+		log.Printf("failed to update notification status to sent: %v", err)
+	}
 	return nil
 }
 
@@ -205,11 +209,15 @@ func (s *NotificationService) sendPush(ctx context.Context, req SendRequest) err
 	err := s.pushSender.SendToUser(ctx, req.UserID, req.Title, req.Body, req.Data)
 
 	if err != nil {
-		_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed)
+		if statusErr := s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusFailed); statusErr != nil {
+			log.Printf("failed to update notification status to failed: %v", statusErr)
+		}
 		return fmt.Errorf("failed to send push: %w", err)
 	}
 
-	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	if err := s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent); err != nil {
+		log.Printf("failed to update notification status to sent: %v", err)
+	}
 	return nil
 }
 
@@ -231,7 +239,9 @@ func (s *NotificationService) sendInApp(ctx context.Context, req SendRequest) er
 
 	// Mark as sent (in-app notifications are "sent" when stored)
 	notification.MarkAsSent()
-	_ = s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent)
+	if err := s.notificationRepo.UpdateStatus(ctx, notification.ID, domain.NotificationStatusSent); err != nil {
+		log.Printf("failed to update notification status to sent: %v", err)
+	}
 
 	// Broadcast via WebSocket if available
 	if s.inAppNotifier != nil {

@@ -3,6 +3,7 @@ package firebase
 import (
 	"context"
 	"fmt"
+	"log"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
@@ -97,7 +98,9 @@ func (c *Client) Send(ctx context.Context, token, title, body string, data map[s
 	if err != nil {
 		// Check if token is invalid and deactivate it
 		if messaging.IsUnregistered(err) || messaging.IsInvalidArgument(err) {
-			_ = c.deviceTokenRepo.Deactivate(ctx, token)
+			if deactivateErr := c.deviceTokenRepo.Deactivate(ctx, token); deactivateErr != nil {
+				log.Printf("failed to deactivate invalid token: %v", deactivateErr)
+			}
 		}
 		return fmt.Errorf("failed to send push notification: %w", err)
 	}
@@ -163,7 +166,9 @@ func (c *Client) SendToUser(ctx context.Context, userID uuid.UUID, title, body s
 			if !resp.Success {
 				// Deactivate invalid tokens
 				if messaging.IsUnregistered(resp.Error) || messaging.IsInvalidArgument(resp.Error) {
-					_ = c.deviceTokenRepo.Deactivate(ctx, tokenStrings[i])
+					if err := c.deviceTokenRepo.Deactivate(ctx, tokenStrings[i]); err != nil {
+						log.Printf("failed to deactivate invalid token: %v", err)
+					}
 				}
 			}
 		}
