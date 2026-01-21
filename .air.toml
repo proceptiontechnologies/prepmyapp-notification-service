@@ -1,0 +1,39 @@
+# Air configuration for hot reload during development
+# Install air: go install github.com/air-verse/air@latest
+# Run: air
+
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Build command
+  cmd = "go build -o ./tmp/server ./cmd/server"
+  # Binary file path
+  bin = "./tmp/server"
+  # Watch these directories
+  include_dir = ["cmd", "internal", "pkg"]
+  # Watch these extensions
+  include_ext = ["go", "toml", "yaml"]
+  # Exclude these directories
+  exclude_dir = ["tmp", "vendor", "testdata", "migrations"]
+  # Exclude files matching this regex
+  exclude_regex = ["_test.go"]
+  # Delay before restarting (in milliseconds)
+  delay = 1000
+
+[log]
+  # Log time
+  time = true
+  # Main log only
+  main_only = false
+
+[color]
+  # Customize colors
+  main = "magenta"
+  watcher = "cyan"
+  build = "yellow"
+  runner = "green"
+
+[misc]
+  # Delete tmp directory on exit
+  clean_on_exit = true

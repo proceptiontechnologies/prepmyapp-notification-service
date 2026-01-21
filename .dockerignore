@@ -1,0 +1,43 @@
+# Binaries
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test files
+*_test.go
+*.test
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Firebase credentials (mount at runtime)
+firebase-credentials.json
+
+# Documentation
+*.md
+!README.md
+
+# Mac OS
+.DS_Store
+
+# Temporary files
+tmp/
+*.log
+
+# Air hot reload
+.air.toml
