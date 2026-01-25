@@ -343,7 +343,7 @@ func generateOtpEmailHtml(otp string) string {
             </p>
 
             <p style="font-size: 11px; color: #6B7280; margin: 0;">
-                © 2025 PrepMyApp, LLC · <a href="mailto:support@prepmyapp.com" style="color: #7DD3FC; text-decoration: none;">support@prepmyapp.com</a>
+                © 2025 PrepMyApp, LLC · <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none;">info@prepmy.app</a>
             </p>
         </div>
     </div>
