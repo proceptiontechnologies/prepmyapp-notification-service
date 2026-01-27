@@ -110,16 +110,18 @@ This code will expire in 10 minutes.
 
 If you didn't request this code, please ignore this email.
 
-- The PrepMyApp Team`, otp)
+- The PrepMyApp Team
+© 2025 PrepMyApp LLC`, otp)
 
 	htmlBody := fmt.Sprintf(`
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-  <h2 style="color: #333;">Your Verification Code</h2>
-  <p style="font-size: 32px; font-weight: bold; color: #007bff; letter-spacing: 8px;">%s</p>
+  <h2 style="color: #1E3A5F;">Your Verification Code</h2>
+  <p style="font-size: 32px; font-weight: bold; color: #1E3A5F; letter-spacing: 8px;">%s</p>
   <p style="color: #666;">This code will expire in 10 minutes.</p>
   <p style="color: #999; font-size: 12px;">If you didn't request this code, please ignore this email.</p>
   <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
   <p style="color: #999; font-size: 12px;">- The PrepMyApp Team</p>
+  <p style="color: #999; font-size: 11px;">© 2025 PrepMyApp LLC</p>
 </div>`, otp)
 
 	return c.SendHTML(ctx, to, subject, body, htmlBody)
@@ -130,19 +132,21 @@ func (c *Client) SendWelcome(ctx context.Context, to, name string) error {
 	subject := "Welcome to PrepMyApp!"
 	body := fmt.Sprintf(`Hi %s,
 
-Welcome to PrepMyApp! We're excited to have you on board.
+Welcome to PrepMyApp! We're excited to help you land your dream job faster.
 
-PrepMyApp helps you streamline your application process with intelligent form automation and tracking.
+PrepMyApp streamlines your job application process with intelligent form automation and tracking, so you can focus on what matters most - preparing for interviews and advancing your career.
 
 Get started by:
 1. Completing your profile
 2. Adding your first application
 3. Using our browser extension for seamless form filling
 
-If you have any questions, feel free to reach out to our support team.
+If you have any questions, feel free to reach out to our support team at info@prepmy.app.
 
 Best regards,
-The PrepMyApp Team`, name)
+The PrepMyApp Team
+
+© 2025 PrepMyApp LLC`, name)
 
 	return c.Send(ctx, to, subject, body)
 }

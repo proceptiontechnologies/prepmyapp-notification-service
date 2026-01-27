@@ -295,7 +295,7 @@ func generateOtpEmailHtml(otp string) string {
         <div style="background: linear-gradient(135deg, #1E3A5F 0%%, #2d4a6f 100%%); padding: 40px 20px; text-align: center;">
             <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
             <h1 style="font-size: 28px; font-weight: bold; color: #ffffff; margin: 0; letter-spacing: 1px;">PrepMyApp</h1>
-            <p style="color: #7DD3FC; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">Automate Your Applications</p>
+            <p style="color: #7DD3FC; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">Land Your Dream Job Faster</p>
         </div>
 
         <!-- Main Content -->
@@ -343,7 +343,7 @@ func generateOtpEmailHtml(otp string) string {
             </p>
 
             <p style="font-size: 11px; color: #6B7280; margin: 0;">
-                © 2025 PrepMyApp, LLC · <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none;">info@prepmy.app</a>
+                © 2025 PrepMyApp LLC · <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none;">info@prepmy.app</a>
             </p>
         </div>
     </div>
