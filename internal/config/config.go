@@ -134,6 +134,10 @@ func Load() (*Config, error) {
 func (c *Config) Validate() error {
 	var missing []string
 
+	// Debug: log what we received (remove after debugging)
+	fmt.Printf("DEBUG: Environment=%s, DatabaseURL set=%v, JWTSecret set=%v, SendGridKey set=%v\n",
+		c.Server.Environment, c.Database.URL != "", c.Auth.JWTSecret != "", c.SendGrid.APIKey != "")
+
 	// In production, these are required
 	if c.Server.Environment == "production" {
 		if c.Database.URL == "" {
