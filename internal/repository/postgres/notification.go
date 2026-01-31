@@ -119,11 +119,12 @@ func (r *NotificationRepository) GetByUserID(ctx context.Context, userID uuid.UU
 func (r *NotificationRepository) UpdateStatus(ctx context.Context, id uuid.UUID, status domain.NotificationStatus) error {
 	query := `
 		UPDATE notifications
-		SET status = $2, updated_at = $3, sent_at = CASE WHEN $2 = 'sent' THEN $3 ELSE sent_at END
+		SET status = $2, updated_at = $3, sent_at = CASE WHEN $4 = 'sent' THEN $3 ELSE sent_at END
 		WHERE id = $1
 	`
 
-	result, err := r.pool.Exec(ctx, query, id, status, time.Now())
+	now := time.Now()
+	result, err := r.pool.Exec(ctx, query, id, status, now, string(status))
 	if err != nil {
 		return fmt.Errorf("failed to update notification status: %w", err)
 	}
