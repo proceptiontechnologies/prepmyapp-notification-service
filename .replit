@@ -1,0 +1,54 @@
+modules = ["go-1.21", "go-1.25", "postgresql-16"]
+
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+PORT = "5000"
+ALLOW_ORIGINS = "*"
+
+[userenv.production]
+CGO_ENABLED = "0"
+GIN_MODE = "release"
+ENVIRONMENT = "production"
+
+[userenv.development]
+ENVIRONMENT = "development"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Notification Service"
+
+[[workflows.workflow]]
+name = "Notification Service"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "go run ./cmd/server"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+build = ["bash", "-c", "CGO_ENABLED=0 go build -o server ./cmd/server"]
+run = ["./server"]
