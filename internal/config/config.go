@@ -91,6 +91,23 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal database config: %w", err)
 	}
 
+	// Build DATABASE_URL from individual PG* variables if not set (for Replit)
+	if cfg.Database.URL == "" {
+		pgHost := viper.GetString("PGHOST")
+		pgPort := viper.GetString("PGPORT")
+		pgUser := viper.GetString("PGUSER")
+		pgPassword := viper.GetString("PGPASSWORD")
+		pgDatabase := viper.GetString("PGDATABASE")
+
+		if pgHost != "" && pgDatabase != "" {
+			if pgPort == "" {
+				pgPort = "5432"
+			}
+			cfg.Database.URL = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+				pgUser, pgPassword, pgHost, pgPort, pgDatabase)
+		}
+	}
+
 	// Unmarshal redis config
 	if err := viper.Unmarshal(&cfg.Redis); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal redis config: %w", err)
