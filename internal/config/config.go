@@ -103,7 +103,7 @@ func Load() (*Config, error) {
 			if pgPort == "" {
 				pgPort = "5432"
 			}
-			cfg.Database.URL = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			cfg.Database.URL = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
 				pgUser, pgPassword, pgHost, pgPort, pgDatabase)
 		}
 	}
@@ -128,11 +128,19 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal auth config: %w", err)
 	}
 
+	// Read secrets directly from environment
+	// (Viper's Unmarshal doesn't properly read env vars for nested struct fields)
+	if cfg.Auth.JWTSecret == "" {
+		cfg.Auth.JWTSecret = viper.GetString("JWT_SECRET")
+	}
+	if cfg.SendGrid.APIKey == "" {
+		cfg.SendGrid.APIKey = viper.GetString("SENDGRID_API_KEY")
+	}
+
 	// Parse comma-separated API keys
 	apiKeysStr := viper.GetString("INTERNAL_API_KEYS")
 	if apiKeysStr != "" {
 		cfg.Auth.APIKeys = strings.Split(apiKeysStr, ",")
-		// Trim whitespace from each key
 		for i, key := range cfg.Auth.APIKeys {
 			cfg.Auth.APIKeys[i] = strings.TrimSpace(key)
 		}
