@@ -50,5 +50,5 @@ externalPort = 80
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["bash", "-c", "CGO_ENABLED=0 go build -o server ./cmd/server"]
+build = ["bash", "-c", "rm -f server && CGO_ENABLED=0 go build -o server ./cmd/server"]
 run = ["./server"]
