@@ -27,6 +27,11 @@ import (
 func main() {
 	ctx := context.Background()
 
+	// Debug: print available secret env vars (remove after debugging)
+	log.Printf("DEBUG ENV: PGHOST=%v, PGDATABASE=%v", os.Getenv("PGHOST") != "", os.Getenv("PGDATABASE") != "")
+	log.Printf("DEBUG ENV: JWT_SECRET=%v, SENDGRID_API_KEY=%v", os.Getenv("JWT_SECRET") != "", os.Getenv("SENDGRID_API_KEY") != "")
+	log.Printf("DEBUG ENV: ENVIRONMENT=%s", os.Getenv("ENVIRONMENT"))
+
 	// Load configuration
 	cfg, err := config.Load()
 	if err != nil {
