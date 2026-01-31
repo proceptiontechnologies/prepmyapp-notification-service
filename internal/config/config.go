@@ -151,20 +151,18 @@ func Load() (*Config, error) {
 func (c *Config) Validate() error {
 	var missing []string
 
-	// Debug: log what we received (remove after debugging)
-	fmt.Printf("DEBUG: Environment=%s, DatabaseURL set=%v, JWTSecret set=%v, SendGridKey set=%v\n",
-		c.Server.Environment, c.Database.URL != "", c.Auth.JWTSecret != "", c.SendGrid.APIKey != "")
-
-	// In production, these are required
+	// In production, only DATABASE_URL is strictly required
+	// JWT_SECRET and SENDGRID_API_KEY are optional (service will work with limited functionality)
 	if c.Server.Environment == "production" {
 		if c.Database.URL == "" {
 			missing = append(missing, "DATABASE_URL")
 		}
+		// Log warnings for missing optional secrets
 		if c.Auth.JWTSecret == "" {
-			missing = append(missing, "JWT_SECRET")
+			fmt.Println("WARNING: JWT_SECRET not set - JWT authentication will not work")
 		}
 		if c.SendGrid.APIKey == "" {
-			missing = append(missing, "SENDGRID_API_KEY")
+			fmt.Println("WARNING: SENDGRID_API_KEY not set - email notifications will not work")
 		}
 	}
 
