@@ -75,9 +75,10 @@ func main() {
 
 	// Initialize Firebase client (optional)
 	var pushSender service.PushSender
-	if cfg.Firebase.CredentialsPath != "" && deviceTokenRepo != nil {
+	if (cfg.Firebase.CredentialsJSON != "" || cfg.Firebase.CredentialsPath != "") && deviceTokenRepo != nil {
 		firebaseClient, err := firebase.NewClient(ctx, firebase.Config{
 			CredentialsPath: cfg.Firebase.CredentialsPath,
+			CredentialsJSON: cfg.Firebase.CredentialsJSON,
 		}, deviceTokenRepo)
 		if err != nil {
 			log.Printf("Warning: Failed to initialize Firebase: %v", err)

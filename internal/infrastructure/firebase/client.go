@@ -22,6 +22,7 @@ type Client struct {
 // Config holds Firebase configuration.
 type Config struct {
 	CredentialsPath string
+	CredentialsJSON string // Alternative: JSON string (for Replit Secrets)
 }
 
 // NewClient creates a new Firebase messaging client.
@@ -29,7 +30,12 @@ func NewClient(ctx context.Context, cfg Config, deviceTokenRepo domain.DeviceTok
 	var app *firebase.App
 	var err error
 
-	if cfg.CredentialsPath != "" {
+	if cfg.CredentialsJSON != "" {
+		// Use credentials from JSON string (Replit Secrets)
+		opt := option.WithCredentialsJSON([]byte(cfg.CredentialsJSON))
+		app, err = firebase.NewApp(ctx, nil, opt)
+	} else if cfg.CredentialsPath != "" {
+		// Use credentials from file path
 		opt := option.WithCredentialsFile(cfg.CredentialsPath)
 		app, err = firebase.NewApp(ctx, nil, opt)
 	} else {

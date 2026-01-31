@@ -44,6 +44,7 @@ type SendGridConfig struct {
 
 type FirebaseConfig struct {
 	CredentialsPath string `mapstructure:"FIREBASE_CREDENTIALS_PATH"`
+	CredentialsJSON string `mapstructure:"FIREBASE_CREDENTIALS_JSON"` // Alternative: JSON string for Replit Secrets
 }
 
 type AuthConfig struct {
@@ -135,6 +136,12 @@ func Load() (*Config, error) {
 	}
 	if cfg.SendGrid.APIKey == "" {
 		cfg.SendGrid.APIKey = viper.GetString("SENDGRID_API_KEY")
+	}
+	if cfg.Firebase.CredentialsJSON == "" {
+		cfg.Firebase.CredentialsJSON = viper.GetString("FIREBASE_CREDENTIALS_JSON")
+	}
+	if cfg.Firebase.CredentialsPath == "" {
+		cfg.Firebase.CredentialsPath = viper.GetString("FIREBASE_CREDENTIALS_PATH")
 	}
 
 	// Parse comma-separated API keys
