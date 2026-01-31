@@ -143,6 +143,11 @@ func main() {
 
 // setupRoutes configures all API routes.
 func setupRoutes(router *gin.Engine, cfg *config.Config, notificationService *service.NotificationService, deviceTokenRepo *postgres.DeviceTokenRepository, preferencesRepo *postgres.PreferencesRepository, wsHub *websocket.Hub) {
+	// Root health check for Replit/load balancer
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{"status": "ok"})
+	})
+
 	// Health check endpoints (no auth required)
 	healthHandler := handler.NewHealthHandler()
 	healthHandler.RegisterRoutes(&router.RouterGroup)
