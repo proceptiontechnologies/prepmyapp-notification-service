@@ -65,6 +65,7 @@ type SendRequest struct {
 	Template string
 	Title    string
 	Body     string
+	HtmlBody string // Optional HTML content for emails
 	Data     map[string]interface{}
 }
 
@@ -167,8 +168,12 @@ func (s *NotificationService) sendEmail(ctx context.Context, req SendRequest) er
 		htmlContent := generateOtpEmailHtml(otp)
 		err = s.emailSender.SendHTML(ctx, req.Email, req.Title, req.Body, htmlContent)
 	default:
-		// For other emails, use simple send
-		err = s.emailSender.Send(ctx, req.Email, req.Title, req.Body)
+		// Use SendHTML if HtmlBody is provided, otherwise use simple send
+		if req.HtmlBody != "" {
+			err = s.emailSender.SendHTML(ctx, req.Email, req.Title, req.Body, req.HtmlBody)
+		} else {
+			err = s.emailSender.Send(ctx, req.Email, req.Title, req.Body)
+		}
 	}
 
 	// Update status

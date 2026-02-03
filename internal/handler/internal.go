@@ -28,6 +28,7 @@ type NotifyRequest struct {
 	Template string                 `json:"template"`
 	Title    string                 `json:"title" binding:"required"`
 	Body     string                 `json:"body" binding:"required"`
+	HtmlBody string                 `json:"html_body"`
 	Data     map[string]interface{} `json:"data"`
 }
 
@@ -76,6 +77,7 @@ func (h *InternalHandler) Notify(c *gin.Context) {
 		Template: req.Template,
 		Title:    req.Title,
 		Body:     req.Body,
+		HtmlBody: req.HtmlBody,
 		Data:     req.Data,
 	}
 
