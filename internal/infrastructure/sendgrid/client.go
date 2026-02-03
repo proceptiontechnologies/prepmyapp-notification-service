@@ -89,6 +89,15 @@ func (c *Client) SendHTML(ctx context.Context, to, subject, plainText, htmlConte
 
 	message := mail.NewSingleEmail(from, subject, toEmail, plainText, htmlContent)
 
+	// Disable click tracking to preserve original URLs
+	// This prevents SSL issues with the tracking subdomain
+	trackingSettings := mail.NewTrackingSettings()
+	clickTracking := mail.NewClickTrackingSetting()
+	clickTracking.SetEnable(false)
+	clickTracking.SetEnableText(false)
+	trackingSettings.SetClickTracking(clickTracking)
+	message.SetTrackingSettings(trackingSettings)
+
 	response, err := c.client.Send(message)
 	if err != nil {
 		return fmt.Errorf("failed to send HTML email: %w", err)
