@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,8 +42,11 @@ type NotifyResponse struct {
 
 // Notify sends a notification through the specified channels.
 func (h *InternalHandler) Notify(c *gin.Context) {
+	log.Printf("[Internal] Notify endpoint called")
+
 	var req NotifyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[Internal] ERROR: invalid request body: %v", err)
 		c.JSON(http.StatusBadRequest, NotifyResponse{
 			Success: false,
 			Error:   err.Error(),
@@ -50,8 +54,11 @@ func (h *InternalHandler) Notify(c *gin.Context) {
 		return
 	}
 
+	log.Printf("[Internal] Notification request: user=%s, channels=%v, title=%s", req.UserID, req.Channels, req.Title)
+
 	userID, err := uuid.Parse(req.UserID)
 	if err != nil {
+		log.Printf("[Internal] ERROR: invalid user_id format: %s", req.UserID)
 		c.JSON(http.StatusBadRequest, NotifyResponse{
 			Success: false,
 			Error:   "invalid user_id format",

@@ -116,13 +116,19 @@ func (c *Client) Send(ctx context.Context, token, title, body string, data map[s
 
 // SendToUser sends a push notification to all of a user's registered devices.
 func (c *Client) SendToUser(ctx context.Context, userID uuid.UUID, title, body string, data map[string]interface{}) error {
+	log.Printf("[Firebase] SendToUser called for user %s", userID)
+
 	// Get user's device tokens
 	tokens, err := c.deviceTokenRepo.GetByUserID(ctx, userID)
 	if err != nil {
+		log.Printf("[Firebase] ERROR getting device tokens for user %s: %v", userID, err)
 		return fmt.Errorf("failed to get device tokens: %w", err)
 	}
 
+	log.Printf("[Firebase] Found %d device tokens for user %s", len(tokens), userID)
+
 	if len(tokens) == 0 {
+		log.Printf("[Firebase] No device tokens registered for user %s, skipping push", userID)
 		return nil // No devices registered, not an error
 	}
 
@@ -161,10 +167,14 @@ func (c *Client) SendToUser(ctx context.Context, userID uuid.UUID, title, body s
 		},
 	}
 
+	log.Printf("[Firebase] Sending multicast to %d tokens", len(tokenStrings))
 	response, err := c.messaging.SendEachForMulticast(ctx, message)
 	if err != nil {
+		log.Printf("[Firebase] ERROR sending multicast: %v", err)
 		return fmt.Errorf("failed to send multicast: %w", err)
 	}
+
+	log.Printf("[Firebase] Multicast result: success=%d, failure=%d", response.SuccessCount, response.FailureCount)
 
 	// Handle failed tokens
 	if response.FailureCount > 0 {

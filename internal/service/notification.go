@@ -71,6 +71,8 @@ type SendRequest struct {
 
 // Send sends notifications through the specified channels.
 func (s *NotificationService) Send(ctx context.Context, req SendRequest) error {
+	log.Printf("[NotificationService] Sending notification to user %s via channels: %v", req.UserID, req.Channels)
+
 	// Get user preferences (if preferencesRepo is available)
 	var prefs *domain.NotificationPreferences
 	if s.preferencesRepo != nil {
@@ -78,6 +80,7 @@ func (s *NotificationService) Send(ctx context.Context, req SendRequest) error {
 		prefs, err = s.preferencesRepo.Get(ctx, req.UserID)
 		if err != nil {
 			// Use default preferences if not found
+			log.Printf("[NotificationService] No preferences found for user %s, using defaults", req.UserID)
 			prefs = domain.NewDefaultPreferences(req.UserID)
 		}
 	} else {
@@ -192,7 +195,10 @@ func (s *NotificationService) sendEmail(ctx context.Context, req SendRequest) er
 
 // sendPush sends a push notification to all user devices.
 func (s *NotificationService) sendPush(ctx context.Context, req SendRequest) error {
+	log.Printf("[NotificationService] sendPush called for user %s, title: %s", req.UserID, req.Title)
+
 	if s.pushSender == nil {
+		log.Printf("[NotificationService] ERROR: pushSender is nil - Firebase not configured")
 		return fmt.Errorf("push sender not configured")
 	}
 

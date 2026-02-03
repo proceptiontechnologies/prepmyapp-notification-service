@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -44,26 +45,34 @@ type RegisterResponse struct {
 
 // Register registers or updates a device token for push notifications.
 func (h *DeviceTokenHandler) Register(c *gin.Context) {
+	log.Printf("[DeviceToken] Register called")
+
 	userID := middleware.GetUserID(c)
 	if userID == uuid.Nil {
+		log.Printf("[DeviceToken] ERROR: unauthorized - no user ID in context")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("[DeviceToken] ERROR: invalid request body: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	log.Printf("[DeviceToken] Registering token for user %s, platform: %s, token: %s...", userID, req.Platform, req.Token[:20])
 
 	// Create device token (upsert - updates if token already exists)
 	deviceToken := domain.NewDeviceToken(userID, req.Token, req.Platform)
 
 	if err := h.repo.Create(c.Request.Context(), deviceToken); err != nil {
+		log.Printf("[DeviceToken] ERROR: failed to create token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to register device token"})
 		return
 	}
 
+	log.Printf("[DeviceToken] Successfully registered token for user %s", userID)
 	c.JSON(http.StatusOK, RegisterResponse{
 		Message: "device token registered successfully",
 		Device:  deviceToken,
@@ -72,18 +81,23 @@ func (h *DeviceTokenHandler) Register(c *gin.Context) {
 
 // List returns all active device tokens for the authenticated user.
 func (h *DeviceTokenHandler) List(c *gin.Context) {
+	log.Printf("[DeviceToken] List called")
+
 	userID := middleware.GetUserID(c)
 	if userID == uuid.Nil {
+		log.Printf("[DeviceToken] ERROR: unauthorized - no user ID")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
 	tokens, err := h.repo.GetByUserID(c.Request.Context(), userID)
 	if err != nil {
+		log.Printf("[DeviceToken] ERROR: failed to fetch tokens: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch device tokens"})
 		return
 	}
 
+	log.Printf("[DeviceToken] Found %d tokens for user %s", len(tokens), userID)
 	c.JSON(http.StatusOK, gin.H{
 		"devices": tokens,
 		"count":   len(tokens),
