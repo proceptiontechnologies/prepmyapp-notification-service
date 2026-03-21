@@ -131,6 +131,12 @@ func Load() (*Config, error) {
 
 	// Read secrets directly from environment
 	// (Viper's Unmarshal doesn't properly read env vars for nested struct fields)
+	if cfg.Database.URL == "" {
+		cfg.Database.URL = viper.GetString("DATABASE_URL")
+	}
+	if cfg.Redis.URL == "" {
+		cfg.Redis.URL = viper.GetString("REDIS_URL")
+	}
 	if cfg.Auth.JWTSecret == "" {
 		cfg.Auth.JWTSecret = viper.GetString("JWT_SECRET")
 	}
