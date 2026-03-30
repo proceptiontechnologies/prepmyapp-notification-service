@@ -170,6 +170,26 @@ func (s *NotificationService) sendEmail(ctx context.Context, req SendRequest) er
 		}
 		htmlContent := generateOtpEmailHtml(otp)
 		err = s.emailSender.SendHTML(ctx, req.Email, req.Title, req.Body, htmlContent)
+	case "welcome_trial":
+		name := ""
+		hasTrial := false
+		trialDays := 3
+		if req.Data != nil {
+			if n, ok := req.Data["name"]; ok && n != nil {
+				name = fmt.Sprintf("%v", n)
+			}
+			if t, ok := req.Data["hasTrial"]; ok {
+				hasTrial = fmt.Sprintf("%v", t) == "true"
+			}
+			if d, ok := req.Data["trialDays"]; ok {
+				fmt.Sscanf(fmt.Sprintf("%v", d), "%d", &trialDays)
+			}
+		}
+		htmlContent := generateWelcomeTrialEmailHtml(name, hasTrial, trialDays)
+		err = s.emailSender.SendHTML(ctx, req.Email, req.Title, req.Body, htmlContent)
+	case "trial_expired":
+		htmlContent := generateTrialExpiredEmailHtml()
+		err = s.emailSender.SendHTML(ctx, req.Email, req.Title, req.Body, htmlContent)
 	default:
 		// Use SendHTML if HtmlBody is provided, otherwise use simple send
 		if req.HtmlBody != "" {
@@ -360,4 +380,185 @@ func generateOtpEmailHtml(otp string) string {
     </div>
 </body>
 </html>`, otp)
+}
+
+// generateWelcomeTrialEmailHtml generates a styled welcome email with trial information.
+func generateWelcomeTrialEmailHtml(name string, hasTrial bool, trialDays int) string {
+	greeting := "Hi"
+	if name != "" {
+		greeting = fmt.Sprintf("Hi %s", name)
+	}
+
+	trialSection := ""
+	if hasTrial {
+		trialSection = fmt.Sprintf(`
+            <!-- Trial Banner -->
+            <div style="background: linear-gradient(135deg, #DCFCE7 0%%%%, #D1FAE5 100%%%%); border-radius: 12px; padding: 24px; margin: 0 0 28px 0; border: 1px solid #86EFAC;">
+                <p style="font-size: 18px; font-weight: 700; color: #166534; margin: 0 0 8px 0;">🎉 Your %d-Day Free Trial is Active!</p>
+                <p style="font-size: 14px; color: #15803D; margin: 0; line-height: 1.6;">
+                    You have full access to the Accelerate plan. Here's what you can do:
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div style="text-align: left; margin: 0 0 28px 0;">
+                <div style="padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                    <span style="font-size: 16px; margin-right: 10px;">🚀</span>
+                    <span style="font-size: 15px; color: #1E3A5F; font-weight: 600;">100 Auto-Applies per Month</span>
+                    <p style="font-size: 13px; color: #6B7280; margin: 4px 0 0 30px;">We apply to matching jobs for you automatically</p>
+                </div>
+                <div style="padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                    <span style="font-size: 16px; margin-right: 10px;">🔍</span>
+                    <span style="font-size: 15px; color: #1E3A5F; font-weight: 600;">Unlimited Job Discovery</span>
+                    <p style="font-size: 13px; color: #6B7280; margin: 4px 0 0 30px;">AI-powered matching finds the best roles for you</p>
+                </div>
+                <div style="padding: 12px 0; border-bottom: 1px solid #F3F4F6;">
+                    <span style="font-size: 16px; margin-right: 10px;">📧</span>
+                    <span style="font-size: 15px; color: #1E3A5F; font-weight: 600;">AI Email Categorization</span>
+                    <p style="font-size: 13px; color: #6B7280; margin: 4px 0 0 30px;">Automatically organize recruiter emails and track responses</p>
+                </div>
+                <div style="padding: 12px 0;">
+                    <span style="font-size: 16px; margin-right: 10px;">📋</span>
+                    <span style="font-size: 15px; color: #1E3A5F; font-weight: 600;">Full Application Management</span>
+                    <p style="font-size: 13px; color: #6B7280; margin: 4px 0 0 30px;">Track applications, interviews, tasks, and documents</p>
+                </div>
+            </div>
+
+            <!-- Urgency Note -->
+            <div style="background-color: #FEF3C7; border-radius: 8px; padding: 14px 20px; margin: 0 0 28px 0;">
+                <p style="font-size: 14px; color: #92400E; margin: 0; font-weight: 500;">
+                    ⏱ Your trial ends in %d days — make the most of it!
+                </p>
+            </div>`, trialDays, trialDays)
+	}
+
+	return fmt.Sprintf(`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to PrepMyApp</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.6; color: #111827; background-color: #F9FAFB;">
+    <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); overflow: hidden;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #1E3A5F 0%%%%, #2d4a6f 100%%%%); padding: 40px 20px; text-align: center;">
+            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
+            <h1 style="font-size: 28px; font-weight: bold; color: #ffffff; margin: 0;">Welcome to PrepMyApp!</h1>
+            <p style="color: #7DD3FC; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">Land Your Dream Job Faster</p>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 40px 30px; text-align: center;">
+            <p style="font-size: 18px; color: #374151; margin: 0 0 24px 0; line-height: 1.6;">
+                %s, welcome to PrepMyApp! We're excited to help you streamline your job search.
+            </p>
+
+            %s
+
+            <!-- CTA Button -->
+            <a href="https://prepmyapp.com" style="display: inline-block; background: linear-gradient(135deg, #1E3A5F 0%%%%, #2d4a6f 100%%%%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-size: 16px; font-weight: 600; margin: 8px 0 0 0;">
+                Get Started
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #1E3A5F; padding: 30px; text-align: center;">
+            <div style="margin: 0 0 20px 0;">
+                <a href="https://prepmyapp.com" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Website</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="https://prepmyapp.com/privacy" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Privacy</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="https://prepmyapp.com/terms" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Terms</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Support</a>
+            </div>
+            <p style="font-size: 11px; color: #6B7280; margin: 0;">
+                © 2025 PrepMyApp LLC · <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none;">info@prepmy.app</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`, greeting, trialSection)
+}
+
+// generateTrialExpiredEmailHtml generates a styled email for trial expiration.
+func generateTrialExpiredEmailHtml() string {
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Free Trial Has Ended</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.6; color: #111827; background-color: #F9FAFB;">
+    <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); overflow: hidden;">
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #1E3A5F 0%, #2d4a6f 100%); padding: 40px 20px; text-align: center;">
+            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
+            <h1 style="font-size: 24px; font-weight: bold; color: #ffffff; margin: 0;">Your Free Trial Has Ended</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 40px 30px; text-align: center;">
+            <p style="font-size: 18px; color: #374151; margin: 0 0 24px 0; line-height: 1.6;">
+                Your free Accelerate trial has come to an end. We hope you enjoyed the experience!
+            </p>
+
+            <!-- What you lose section -->
+            <div style="text-align: left; background-color: #FEF2F2; border-radius: 12px; padding: 24px; margin: 0 0 28px 0; border: 1px solid #FECACA;">
+                <p style="font-size: 15px; font-weight: 600; color: #991B1B; margin: 0 0 12px 0;">Without a subscription, you'll lose access to:</p>
+                <div style="padding: 6px 0;">
+                    <span style="color: #DC2626; margin-right: 8px;">✕</span>
+                    <span style="font-size: 14px; color: #7F1D1D;">Auto-apply to jobs</span>
+                </div>
+                <div style="padding: 6px 0;">
+                    <span style="color: #DC2626; margin-right: 8px;">✕</span>
+                    <span style="font-size: 14px; color: #7F1D1D;">Unlimited job discovery</span>
+                </div>
+                <div style="padding: 6px 0;">
+                    <span style="color: #DC2626; margin-right: 8px;">✕</span>
+                    <span style="font-size: 14px; color: #7F1D1D;">AI email categorization</span>
+                </div>
+                <div style="padding: 6px 0;">
+                    <span style="color: #DC2626; margin-right: 8px;">✕</span>
+                    <span style="font-size: 14px; color: #7F1D1D;">Application tracking & management</span>
+                </div>
+            </div>
+
+            <!-- Pricing nudge -->
+            <div style="background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%); border-radius: 12px; padding: 24px; margin: 0 0 28px 0; border: 1px solid #BAE6FD;">
+                <p style="font-size: 16px; font-weight: 600; color: #1E3A5F; margin: 0 0 8px 0;">Continue with Accelerate</p>
+                <p style="font-size: 14px; color: #374151; margin: 0 0 4px 0;">100 auto-applies/month, unlimited discovery, and all premium features</p>
+                <p style="font-size: 20px; font-weight: 700; color: #1E3A5F; margin: 12px 0 0 0;">€19/month</p>
+            </div>
+
+            <!-- CTA Button -->
+            <a href="https://prepmyapp.com" style="display: inline-block; background: linear-gradient(135deg, #1E3A5F 0%, #2d4a6f 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 10px; font-size: 16px; font-weight: 600;">
+                Subscribe Now
+            </a>
+
+            <p style="font-size: 13px; color: #9CA3AF; margin: 16px 0 0 0;">
+                Open the PrepMyApp app to view all plans
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #1E3A5F; padding: 30px; text-align: center;">
+            <div style="margin: 0 0 20px 0;">
+                <a href="https://prepmyapp.com" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Website</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="https://prepmyapp.com/privacy" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Privacy</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="https://prepmyapp.com/terms" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Terms</a>
+                <span style="color: #4B5563;">|</span>
+                <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none; font-size: 13px; margin: 0 12px;">Support</a>
+            </div>
+            <p style="font-size: 11px; color: #6B7280; margin: 0;">
+                © 2025 PrepMyApp LLC · <a href="mailto:info@prepmy.app" style="color: #7DD3FC; text-decoration: none;">info@prepmy.app</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>`
 }
