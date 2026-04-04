@@ -324,9 +324,8 @@ func generateOtpEmailHtml(otp string) string {
     <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); overflow: hidden;">
         <!-- Header with Navy gradient -->
         <div style="background: linear-gradient(135deg, #1E3A5F 0%%, #2d4a6f 100%%); padding: 40px 20px; text-align: center;">
-            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
+            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="display: block; margin: 0 auto 12px auto; width: 64px; height: 64px; border-radius: 12px;">
             <h1 style="font-size: 28px; font-weight: bold; color: #ffffff; margin: 0; letter-spacing: 1px;">PrepMyApp</h1>
-            <p style="color: #7DD3FC; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">Land Your Dream Job Faster</p>
         </div>
 
         <!-- Main Content -->
@@ -443,9 +442,8 @@ func generateWelcomeTrialEmailHtml(name string, hasTrial bool, trialDays int) st
     <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); overflow: hidden;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1E3A5F 0%%%%, #2d4a6f 100%%%%); padding: 40px 20px; text-align: center;">
-            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
+            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="display: block; margin: 0 auto 12px auto; width: 64px; height: 64px; border-radius: 12px;">
             <h1 style="font-size: 28px; font-weight: bold; color: #ffffff; margin: 0;">Welcome to PrepMyApp!</h1>
-            <p style="color: #7DD3FC; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">Land Your Dream Job Faster</p>
         </div>
 
         <!-- Main Content -->
@@ -495,7 +493,7 @@ func generateTrialExpiredEmailHtml() string {
     <div style="max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 20px rgba(30, 58, 95, 0.1); overflow: hidden;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #1E3A5F 0%, #2d4a6f 100%); padding: 40px 20px; text-align: center;">
-            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="width: 64px; height: 64px; margin-bottom: 12px; border-radius: 12px;">
+            <img src="https://prepmyapp.com/prepmyapp.png" alt="PrepMyApp" style="display: block; margin: 0 auto 12px auto; width: 64px; height: 64px; border-radius: 12px;">
             <h1 style="font-size: 24px; font-weight: bold; color: #ffffff; margin: 0;">Your Free Trial Has Ended</h1>
         </div>
 

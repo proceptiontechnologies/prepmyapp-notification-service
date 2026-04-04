@@ -141,7 +141,7 @@ func (c *Client) SendWelcome(ctx context.Context, to, name string) error {
 	subject := "Welcome to PrepMyApp!"
 	body := fmt.Sprintf(`Hi %s,
 
-Welcome to PrepMyApp! We're excited to help you land your dream job faster.
+Welcome to PrepMyApp! We're excited to have you on board.
 
 PrepMyApp streamlines your job application process with intelligent form automation and tracking, so you can focus on what matters most - preparing for interviews and advancing your career.
 
