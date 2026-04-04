@@ -393,9 +393,9 @@ func generateWelcomeTrialEmailHtml(name string, hasTrial bool, trialDays int) st
 		trialSection = fmt.Sprintf(`
             <!-- Trial Banner -->
             <div style="background: linear-gradient(135deg, #DCFCE7 0%%%%, #D1FAE5 100%%%%); border-radius: 12px; padding: 24px; margin: 0 0 28px 0; border: 1px solid #86EFAC;">
-                <p style="font-size: 18px; font-weight: 700; color: #166534; margin: 0 0 8px 0;">🎉 Your %d-Day Free Trial is Active!</p>
+                <p style="font-size: 18px; font-weight: 700; color: #166534; margin: 0 0 8px 0;">🎉 Activate Your %d-Day Free Trial!</p>
                 <p style="font-size: 14px; color: #15803D; margin: 0; line-height: 1.6;">
-                    You have full access to the Accelerate plan. Here's what you can do:
+                    Go to the Subscriptions tab in the app and tap "Start free trial" to unlock the Accelerate plan:
                 </p>
             </div>
 
